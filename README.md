@@ -1,52 +1,57 @@
-# praktika
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
-В Java абстрактные методы и классы нужны для того, чтобы задать общий каркас (шаблон) для других классов. Они помогают создавать структуры, где базовые методы или свойства уже определены, а конкретные детали уточняются в наследниках.
+public class NameCollectionApp {
 
-Абстрактные классы
-Это классы, которые нельзя создавать напрямую (то есть нельзя написать new AbstractClass()). Они служат основой для других классов. Абстрактный класс может содержать:
+    private static final String DB_URL = "jdbc:postgresql://localhost:5432/your_database"; // Замените на ваш URL
+    private static final String USER = "your_username"; // Замените на ваше имя пользователя
+    private static final String PASSWORD = "your_password"; // Замените на ваш пароль
 
-Абстрактные методы (без реализации).
-Обычные методы (с реализацией).
-Поля (переменные).
-Конструкторы.
+    public static void main(String[] args) {
+        List<String> collection1 = new ArrayList<>();
+        List<String> collection2 = new ArrayList<>();
 
-abstract class Animal {
+        // Заполнение коллекций
+        collection1.add("Alice");
+        collection1.add("Bob");
+        collection2.add("Charlie");
+        collection2.add("Diana");
 
-    String name;
-    
-    // Конструктор
-    Animal(String name) {
-        this.name = name;
+        // Сохранение в базу данных
+        saveNamesToDatabase(collection1);
+        saveNamesToDatabase(collection2);
+
+        // Вывод имен на консоль
+        System.out.println("Collection 1:");
+        collection1.forEach(System.out::println);
+        System.out.println("Collection 2:");
+        collection2.forEach(System.out::println);
     }
-    // Абстрактный метод — реализация будет в потомках
-    abstract void makeSound();
-    // Обычный метод
-    void eat() {
-        System.out.println(name + " is eating.");
+
+    private static void saveNamesToDatabase(List<String> names) {
+        String insertSQL = "INSERT INTO names (name) VALUES (?)";
+
+        try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASSWORD);
+             PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
+
+            for (String name : names) {
+                preparedStatement.setString(1, name);
+                preparedStatement.executeUpdate();
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
 
-Абстрактные методы
-Абстрактные методы не имеют тела (только заголовок). Они обязательны для реализации в дочерних классах.
 
-class Dog extends Animal {
+CREATE TABLE names (
 
-    Dog(String name) {
-        super(name);
-    }
-    @Override
-    void makeSound() {
-        System.out.println(name + " says: Woof!");
-    }
-}
-class Cat extends Animal {
-
-    Cat(String name) {
-        super(name);
-    }
-    @Override
-    void makeSound() {
-        System.out.println(name + " says: Meow!");
-    }
-}
-
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+);
