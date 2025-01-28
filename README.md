@@ -11,6 +11,7 @@
 Конструкторы.
 
 abstract class Animal {
+
     String name;
     
     // Конструктор
@@ -29,6 +30,7 @@ abstract class Animal {
 Абстрактные методы не имеют тела (только заголовок). Они обязательны для реализации в дочерних классах.
 
 class Dog extends Animal {
+
     Dog(String name) {
         super(name);
     }
@@ -38,6 +40,7 @@ class Dog extends Animal {
     }
 }
 class Cat extends Animal {
+
     Cat(String name) {
         super(name);
     }
