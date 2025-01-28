@@ -12,6 +12,7 @@
 
 abstract class Animal {
     String name;
+    
     // Конструктор
     Animal(String name) {
         this.name = name;
